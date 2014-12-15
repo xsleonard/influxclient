@@ -85,3 +85,32 @@ func (c *InfluxClient) Send(name string, columns []string, points []interface{},
 		log.Printf("Failed to write series to influxdb: %s", err)
 	}
 }
+
+func (c *InfluxClient) Inc(name string, amount int64, sampleRate float32) {
+	if c != nil {
+		c.Send(name, []string{"value"}, []interface{}{amount}, sampleRate)
+	}
+}
+
+func (c *InfluxClient) Dec(name string, amount int64, sampleRate float32) {
+	if c != nil {
+		c.Send(name, []string{"value"}, []interface{}{-amount}, sampleRate)
+	}
+}
+
+func (c *InfluxClient) Timing(name string, start time.Time, sampleRate float32) {
+	if c != nil {
+		us := time.Since(start).Nanoseconds() / 1000
+		c.Send(name, []string{"microseconds"}, []interface{}{us}, sampleRate)
+	}
+}
+
+func (c *InfluxClient) TimingRaw(name string, us int64, sampleRate float32) {
+	if c == nil {
+		c.Send(name, []string{"microseconds"}, []interface{}{us}, sampleRate)
+	}
+}
+
+func (c *InfluxClient) ElapsedMicroseconds(start time.Time) int64 {
+	return time.Since(start).Nanoseconds() / 1000
+}
