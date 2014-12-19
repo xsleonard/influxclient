@@ -19,6 +19,7 @@ func init() {
 
 type InfluxClient struct {
 	client   *client.Client
+	prefix   string
 	quitChan chan struct{}
 }
 
@@ -56,6 +57,7 @@ func New(influxURL string, quitChan chan struct{}) (*InfluxClient, error) {
 
 	ic := &InfluxClient{
 		client:   c,
+		prefix:   cc.Database + ".",
 		quitChan: quitChan,
 	}
 
@@ -76,7 +78,7 @@ func (c *InfluxClient) Send(name string, columns []string, points []interface{},
 	}
 
 	series := &client.Series{
-		Name:    name,
+		Name:    c.prefix + name,
 		Columns: columns,
 		Points:  [][]interface{}{points},
 	}
