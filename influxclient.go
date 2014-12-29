@@ -88,6 +88,23 @@ func (c *InfluxClient) Send(name string, columns []string, points []interface{},
 	}
 }
 
+func (c *InfluxClient) SendMap(name string, data map[string]interface{}, sampleRate float32) {
+	if c == nil {
+		return
+	}
+
+	i := 0
+	columns := make([]string, len(data))
+	points := make([]interface{}, len(data))
+	for c, p := range data {
+		columns[i] = c
+		points[i] = p
+		i++
+	}
+
+	c.Send(name, columns, points, sampleRate)
+}
+
 func (c *InfluxClient) Inc(name string, amount int64, sampleRate float32) {
 	if c != nil {
 		c.Send(name, []string{"value"}, []interface{}{amount}, sampleRate)
